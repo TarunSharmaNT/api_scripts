@@ -16,11 +16,11 @@ import cv2
 import matplotlib.pyplot as plt
 
 ################################## PARAMS
-image_source_folder = "/home/tarun/Number_Theory/Filtered_images/phase_2_testing/rear_door_l/images/"
+image_source_folder = "/home/tarun/Number_Theory/New_Data_Preparation/Rear_door/Aniket/dest_folder/"
 
-std_api_result_csv = "/home/tarun/Number_Theory/Filtered_images/phase_2_testing/rear_door_l/dest_folder/main.csv"
+std_api_result_csv = "/home/tarun/Number_Theory/New_Data_Preparation/Rear_door/Aniket/main.csv"
 
-csv_destination = "/home/tarun/Number_Theory/Filtered_images/phase_2_testing/rear_door_l/dest_folder/"
+csv_destination = "/home/tarun/Number_Theory/New_Data_Preparation/Rear_door/Aniket/dest_folder_new/"
 
 ###################
 df = pd.read_csv(std_api_result_csv)

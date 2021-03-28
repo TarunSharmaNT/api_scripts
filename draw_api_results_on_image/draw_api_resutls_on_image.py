@@ -1,6 +1,15 @@
 ##########################Edited March 26 Tarun Sharma######################################
 ###############################################################################
 
+import os
+import socket
+
+print("Process id ",os.getpid())
+print("hostname ",socket.gethostname())
+
+################################################################################
+hostname = socket.gethostname()
+
 
 #importing the libraries 
 import pandas as pd 
@@ -9,18 +18,25 @@ import glob
 import shutil 
 import matplotlib.pyplot as plt 
 
-### params 
-image_source_folder = "/home/tarun/Number_Theory/New_Data_Preparation/Data/api_data_march_15/"
-std_api_csv_path ="/home/tarun/Number_Theory/New_Data_Preparation/api_test/std_api_test/test_folder_dest/main.csv"
-defect_api_csv_path = "/home/tarun/Number_Theory/New_Data_Preparation/api_test/defect_api_test/csv_data/2021_03_181616057351defect_api_result.csv"
-destination_folder = "/home/tarun/Number_Theory/New_Data_Preparation/Data/dest_images_new/"
-#############################################
+############################ parameters########################################################### 
+image_source_folder = "/home/tarun/Number_Theory/New_Data_Preparation/Rear_door/Aniket/dest_folder/"
+std_api_csv_path ="/home/tarun/Number_Theory/New_Data_Preparation/Rear_door/Aniket/main.csv"
+defect_api_csv_path = "/home/tarun/Number_Theory/New_Data_Preparation/Rear_door/Aniket/dest_folder_new/2021_03_281616908265defect_api_result.csv"
+destination_folder = "/home/tarun/Number_Theory/New_Data_Preparation/Rear_door/Aniket/dest_images_new/"
+
+if hostname == "tarun-Lenovo-V14-IIL":
+	image_source_folder = "/home/tarun/Number_Theory/New_Data_Preparation/Rear_door/Aniket/dest_folder/"
+	std_api_csv_path ="/home/tarun/Number_Theory/New_Data_Preparation/Rear_door/Aniket/main.csv"
+	defect_api_csv_path = "/home/tarun/Number_Theory/New_Data_Preparation/Rear_door/Aniket/dest_folder_new/2021_03_281616908265defect_api_result.csv"
+	destination_folder = "/home/tarun/Number_Theory/New_Data_Preparation/Rear_door/Aniket/dest_images_new/"
+##################################################################################################
+
+
 
 df_defect = pd.read_csv(defect_api_csv_path)
 df_std = pd.read_csv(std_api_csv_path)
 
 #############################################
-
 for img in glob.glob(image_source_folder + "*.jpg"):
 
 	image_name = img.split('/')[-1]
@@ -52,7 +68,7 @@ for img in glob.glob(image_source_folder + "*.jpg"):
 
 
 		if image_name in df_defect['image_name'].tolist():
-
+			print(image_name)
 			sub = df_defect.loc[df_defect['image_name']==image_name,]
 
 			for i in range(len(sub)):
@@ -60,18 +76,22 @@ for img in glob.glob(image_source_folder + "*.jpg"):
 				data = sub.iloc[i,]
 
 				status = data['detection_status']
-
-				if status != "True":
+				print(status)
+				print(type(status))
+				if status != True:
 					continue
 				else :
+					print("Hello")
 					xmin = int(data['xmin'])
 					ymin = int(data['ymin'])
 					xmax = int(data['xmax'])
 					ymax = int(data['ymax'])
 
-					image = cv2.rectangle(image, (xmin, ymin), (xmax, ymax), (0,255,0),3)
-		else:
-			pass
+					image = cv2.rectangle(image, (xmin, ymin), (xmax, ymax), (0,255,255),3)
+					#plt.imshow(image)
+					#plt.show()
+					#plt.close()
+		
 		cv2.imwrite(destination_folder+image_name, image)
 
 
