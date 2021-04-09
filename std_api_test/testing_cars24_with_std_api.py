@@ -1,5 +1,7 @@
 ###########################################
 import os 
+import torch
+import psutil
 print(os.getpid())
 ###########################################
 
@@ -111,7 +113,10 @@ skipped = 0
 print("processing image from {} to {}".format(start_index,end_index))
 print("total images :", end_index-start_index)
 
-
+free_gpu_list=[]
+free_ram_list=[]
+image_name_list=[]
+inference_time_list=[]
 for img in glob.glob(source+"/*.jpg")[start_index : end_index]:
 			count=count+1
 			if count%100 == 0:
@@ -119,7 +124,6 @@ for img in glob.glob(source+"/*.jpg")[start_index : end_index]:
 				print("skipped {} images".format(skipped))
 		#try:
 			image_name = img.split("/")[-1]
-
 
 			#First skipping is when we have different loc code other than we have chosen 	
 			if image_name.split('_')[2] not in selected_codes_for_augpoc:
@@ -137,11 +141,30 @@ for img in glob.glob(source+"/*.jpg")[start_index : end_index]:
 		
 			#First APi
 			try:
+				###########################inference time#########################
+				start=time.time()
 				status1, output1 = subprocess.getstatusoutput(cmd1)
-				main_output1 = output1.split("\n")[-1].replace('false','False')
-				main_output1 = main_output1.split("\n")[-1].replace('true','True')
-				main_output1 = eval(main_output1)
-				
+				end_time=time.time()-start
+				inference_time_list.append(end_time)
+				###################################################################
+
+				########free gpu mem computation################
+				free_gpu_temp = (torch.cuda.get_device_properties(0).total_memory - torch.cuda.memory_reserved(0))/2.**30
+				free_gpu_list.append(free_gpu_temp)
+				################################################
+
+
+				########free cpu computation####################
+				free_ram_temp = psutil.virtual_memory().free/2.**30
+				free_ram_list.append(free_ram_temp)
+				####################################################
+
+				try:
+					main_output1 = output1.split("\n")[-1].replace('false','False')
+					main_output1 = main_output1.split("\n")[-1].replace('true','True')
+					main_output1 = eval(main_output1)
+				except:
+					continue
 				detection_status_1 = main_output1["detection_status"]
 				if detection_status_1 == True:
 					
@@ -190,7 +213,6 @@ for img in glob.glob(source+"/*.jpg")[start_index : end_index]:
 					pred_is_too_far_list.append("dummy")
 					pred_is_too_close_list.append("dummy")
 					#continue       
-
 
 			try:
 				#Second Api
@@ -311,6 +333,10 @@ for img in glob.glob(source+"/*.jpg")[start_index : end_index]:
 # #exit("exit")
 
 
+inference_df=pd.DataFrame({"image_name":image_name_list,"infer_time":inference_time_list,"free_ram":free_ram_list,"free_gpu":free_gpu_list})
+inference_time_list.to_csv(index+".csv",index=False)
+
+
 #First make a copy of the old dataframe######################################
 new_df = pd.DataFrame()
 new_df['image_name'] = all_image_name
@@ -350,8 +376,10 @@ pred_is_too_close_list=[]
 
 
 
+
+
 ##########################Saving up the csv#########################################
-new_df.to_csv(dest+"/"+main_time_stamp+ "_pred_values_"+str(index)+"_.csv",index=False)
-print("finish")
+#new_df.to_csv(dest+"/"+main_time_stamp+ "_pred_values_"+str(index)+"_.csv",index=False)
+#print("finish")
 #exit()
 ###################################################################################

@@ -90,14 +90,14 @@ def read_all_csv_from_dir_list(folder_paths):
 if __name__ == "__main__":
 	################Remember to handle the defect properly that is the main priority ###################
 
-
-
 	#the images from which we prepare the data fot the annotation guys
 	##############################################################################################
-	main_concatenated_csv = "/home/tarun/Number_Theory/New_Data_Preparation/Rear_door/main.csv"
+	main_concatenated_csv = "/home/tarun/Number_Theory/New_Data_Preparation/Rear_door/csv_folder/final.csv"	
+	old_df  = pd.read_csv(main_concatenated_csv)
+	old_df = old_df[["image_name","pred_loc_code"]]
+	print(old_df.columns)
+	#exit("first debug point")
 	
-	old_df  = pd.read_csv(main_concatenated_csv)["image_name","pred_loc_code"]
-	image_list_from_main_csv = pd.read_csv(main_concatenated_csv)["image_name"].tolist()
 	###############################################################################################
 	
 
@@ -107,7 +107,7 @@ if __name__ == "__main__":
 	##########################################csv Folders##########################################
 	Parent_folder_for_each_intern ="/home/nt/tarun_sharma/image_explore_2/backup_images_for_processing/front_view_images_feb28_splitted/Annotation_history/"
 	if hostname == "tarun-Lenovo-V14-IIL":
-		Parent_folder_for_each_intern = "/home/tarun/Number_Theory/New_Data_Preparation/Rear_door/Sravani/" 
+		Parent_folder_for_each_intern = "/home/tarun/Number_Theory/Annotation_history/Data/" 
 	'''	
 	folder_paths_csvs=[]
 	for folder in os.listdir(Parent_folder_for_each_intern):
@@ -120,15 +120,17 @@ if __name__ == "__main__":
 	#########################################images Folders########################################
 	Parent_folder_images = "/home/nt/tarun_sharma/image_explore_2/backup_images_for_processing/front_view_images_feb28_splitted/done_images/"
 	if hostname == "tarun-Lenovo-V14-IIL":
-		Parent_folder_images = "/home/tarun/Number_Theory/New_Data_Preparation/Validation_csv/orig_images/" 
+		Parent_folder_images = "/home/tarun/Number_Theory/New_Data_Preparation/Validation_csv/images_door/" 
 
-	
 	folder_paths_images = []
 	for folder in os.listdir(Parent_folder_images):
 		if os.path.isdir(Parent_folder_images + folder):
 			folder_paths_images.append(Parent_folder_images+folder)
 	###############################################################################################
 
+	#image_list_from_main_csv = [path.split("/")[-1] for path in Path(Parent_folder_images).rglob('*.jpg')]
+	
+	
 	#This we need to update now 
 	#require tags to filter from the region_attributes
 	req_tags = ['{"labels":"door"}','{"labels":"window"}','{"labels":"HOOD"}','{"labels":"WINDSHIELD"}','{"labels":"dent"}','{"labels":"scratch"}','{"labels":"defect"}','{"labels":"FRONT_VIEW"}','{"labels":"REAR_VIEW"}','{"labels":"REAR_45_LEFT"}','{"labels":"FRONT_45_LEFT"}','{"labels":"FRONT_45_RIGHT"}','{"labels":"REAR_45_RIGHT"}','{"labels":"DRIVER_SIDE"}','{"labels":"PASSENGER_SIDE"}','{"labels":"STEERING_WHEEL"}','{"labels":"GEARSHIFT"}','{"labels":"AIR_INTAKE"}','{"labels":"DASHBOARD"}','{"labels":"HEAD_LIGHT_RIGHT"}','{"labels":"HEAD_LIGHT_LEFT"}','{"labels":"FRONT_WINDOW_PSIDE"}','{"labels":"DSIDE_FRONT_DOOR"}','{"labels":"DSIDE_REAR_DOOR"}','{"labels":"REAR_WINDOW_DSIDE"}','{"labels":"PSIDE_FRONT_DOOR"}','{"labels":"PSIDE_REAR_DOOR"}','{"labels":"FRONT_WINDOW_DSIDE"}','{"labels":"REAR_WINDOW_PSIDE"}']
@@ -140,14 +142,14 @@ if __name__ == "__main__":
 	#destination of the defect images
 	dest_defect_image = "/home/nt/tarun_sharma/image_explore_2/backup_images_for_processing/front_view_images_feb28_splitted/defect_upto_march12/"
 	if hostname == "tarun-Lenovo-V14-IIL":
-		dest_defect_image = "/home/tarun/Number_Theory/New_Data_Preparation/Validation_csv/orig_images/test_for_sravani_defect/"
+		dest_defect_image = "/home/tarun/Number_Theory/Annotation_history/defect_upto_march_28_rear_door/defect/"
 	##############################################################################################################################
 
 
 	################non defect images destination path #########################################################
 	dest_non_defect_image = "/home/tarun/Number_Theory/New_Data_Preparation/Processing_code/Data/Non_Defect/"
 	if hostname == "tarun-Lenovo-V14-IIL":
-			dest_non_defect_image = "/home/tarun/Number_Theory/New_Data_Preparation/Validation_csv/orig_images/test_for_sravani_non_defect/"
+			dest_non_defect_image = "/home/tarun/Number_Theory/Annotation_history/defect_upto_march_28_rear_door/non_defect/"
 	############################################################################################################
 
 
@@ -318,7 +320,10 @@ if __name__ == "__main__":
 						ymax = int(data['height']) + ymin
 
 
-						old_label = old_df[old_df["image_name"]==image_name]["pred_loc_code"].tolist()[0]
+						old_label = old_df.loc[old_df["image_name"]==image_name,]
+						print(old_label.shape)
+						#exit("second debug point")
+
 						xmin_list.append(xmin)
 						ymin_list.append(ymin)
 						xmax_list.append(xmax)
@@ -439,7 +444,6 @@ if __name__ == "__main__":
 						final_mask_window = final_mask_window * seg_mask_window_bool
 						# plt.imshow(final_mask)
 						# plt.show()
-
 						# crop both image and mask with bbox values 
 						copy_image_2 = copy_image_2[ymin2:ymax2, xmin2:xmax2]
 						final_mask_window = final_mask_window[ymin2:ymax2, xmin2:xmax2]
@@ -453,37 +457,57 @@ if __name__ == "__main__":
 						# plt.show()
 						# plt.imshow(final_mask)
 						# plt.show()
-
-
-							#write both image into same folder for the hood
+						#write both image into same folder for the hood
 						print(dest_defect_image+"door/"+image_name_org_hood)
 						print(np.unique(copy_image_1))
 						#exit("finish")
 
 					if '{"labels":"dent"}' in region_label_list or '{"labels":"scratch"}' in region_label_list or '{"labels":"defect"}' in region_label_list:
-						cv2.imwrite(dest_defect_image+"door/"+image_name_org_hood,copy_image_1)
-						cv2.imwrite(dest_defect_image+"door/"+image_name_seg_mask_hood,final_mask)
-
+						if os.path.isdir(dest_defect_image+"door"):
+							cv2.imwrite(dest_defect_image+"door/"+image_name_org_hood,copy_image_1)
+							cv2.imwrite(dest_defect_image+"door/"+image_name_seg_mask_hood,final_mask)
+						else:
+							os.makedirs(dest_defect_image+"door")
+							cv2.imwrite(dest_defect_image+"door/"+image_name_org_hood,copy_image_1)
+							cv2.imwrite(dest_defect_image+"door/"+image_name_seg_mask_hood,final_mask)
 					#write both image into same folder for the windhshield part 
 					if '{"labels":"dent"}' in region_label_list or '{"labels":"scratch"}' in region_label_list or '{"labels":"defect"}' in region_label_list:
 						if np.unique(seg_mask_window.sum() > 0):
-							cv2.imwrite(dest_defect_image+"window/"+image_name_org_window,copy_image_2)
-							cv2.imwrite(dest_defect_image+"window/"+image_name_seg_mask_window,final_mask_window)
-							cv2.imwrite(dest_defect_image+"window/"+image_name_org_window.split("_blended")[0]+"_seg_mask.png",final_seg_mask_window)	
+    							
+							if os.path.isdir(dest_defect_image+"window"):
+								cv2.imwrite(dest_defect_image+"window/"+image_name_org_window,copy_image_2)
+								cv2.imwrite(dest_defect_image+"window/"+image_name_seg_mask_window,final_mask_window)
+								cv2.imwrite(dest_defect_image+"window/"+image_name_org_window.split("_blended")[0]+"_seg_mask.png",final_seg_mask_window)	
+							else:
+								os.makedirs(dest_defect_image+"window/")
+								cv2.imwrite(dest_defect_image+"window/"+image_name_org_window,copy_image_2)
+								cv2.imwrite(dest_defect_image+"window/"+image_name_seg_mask_window,final_mask_window)
+								cv2.imwrite(dest_defect_image+"window/"+image_name_org_window.split("_blended")[0]+"_seg_mask.png",final_seg_mask_window)	
 
 				else:
 						#here we are going to save non defect hood and all  and others there in csv only
 						if (seg_mask.sum() > 0):
 								final_mask_hood = np.dstack((seg_mask,bty_mask,bty_mask))
 								#For saving the hood at the non defect images path
-								cv2.imwrite(dest_non_defect_image+"door/"+image_name,image)
-								cv2.imwrite(dest_non_defect_image+"door/"+image_name.split(".jpg")[0] + "_mask.png",final_mask_hood)
+								if os.path.isdir(dest_non_defect_image+"door"):
+									cv2.imwrite(dest_non_defect_image+"door/"+image_name,image)
+									cv2.imwrite(dest_non_defect_image+"door/"+image_name.split(".jpg")[0] + "_mask.png",final_mask_hood)
+								else:
+									os.makedirs(dest_non_defect_image+"door")
+									cv2.imwrite(dest_non_defect_image+"door/"+image_name,image)
+									cv2.imwrite(dest_non_defect_image+"door/"+image_name.split(".jpg")[0] + "_mask.png",final_mask_hood)
 
 						if (seg_mask_window.sum() > 0):
 								final_mask_window = np.dstack((seg_mask_window,bty_mask_window,bty_mask_window))
 								#For saving the window at non defect images path 
-								cv2.imwrite(dest_non_defect_image+"window/"+image_name,image)
-								cv2.imwrite(dest_non_defect_image+"window/"+image_name.split(".jpg")[0] + "_mask.png",final_mask_window)
+								if os.path.isdir(dest_non_defect_image+"window"):
+									cv2.imwrite(dest_non_defect_image+"window/"+image_name,image)
+									cv2.imwrite(dest_non_defect_image+"window/"+image_name.split(".jpg")[0] + "_mask.png",final_mask_window)
+								else:
+									os.makedirs(dest_non_defect_image+"window")
+									cv2.imwrite(dest_non_defect_image+"window/"+image_name,image)
+									cv2.imwrite(dest_non_defect_image+"window/"+image_name.split(".jpg")[0] + "_mask.png",final_mask_window)
+
 				region_label_list = []
 	#saving the dataframe for the other loc codes with new bbox and new label this is for the std thing 
 	main_df = pd.DataFrame({"image_name":image_name_list,"xmin":xmin_list,"ymin":ymin_list,"xmax":xmax_list,"ymax":ymax_list,"label":label_list})

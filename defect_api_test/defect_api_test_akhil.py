@@ -1,6 +1,8 @@
+#gunicorn -k uvicorn.workers.UvicornWorker --bind "0.0.0.0:8001" --log-level debug main:app
 #################Edited March 26 Tarun Sharma ################################
 ##############################################################################
 
+from resource import error
 import numpy as np
 import pandas as pd
 import glob
@@ -14,17 +16,32 @@ import time
 import datetime
 import cv2
 import matplotlib.pyplot as plt
+import sys
+import socket
 
+##########################################
+print("Print Process id ")
+print(os.getpid())
+###########################################
+print("hostname")
+hostname = socket.gethostname()
+print(hostname)
+###########################################
+argv = sys.args
+index = argv[1]
+start_index = argv[2]
+end_index = argv[3]
 ################################## PARAMS
-image_source_folder = "/home/tarun/Number_Theory/New_Data_Preparation/Rear_door/Aniket/dest_folder/"
+image_source_folder = "/home/tarun/Number_Theory/New_Data_Preparation/Rear_door/five_thousand/user_6/"
 
-std_api_result_csv = "/home/tarun/Number_Theory/New_Data_Preparation/Rear_door/Aniket/main.csv"
+std_api_result_csv = "/home/tarun/Number_Theory/New_Data_Preparation/Rear_door/five_thousand/std_api/main.csv"
 
-csv_destination = "/home/tarun/Number_Theory/New_Data_Preparation/Rear_door/Aniket/dest_folder_new/"
-
+csv_destination = "/home/tarun/Number_Theory/New_Data_Preparation/Rear_door/five_thousand/defect_csv/"
 ###################
-df = pd.read_csv(std_api_result_csv)
-
+try:
+    df = pd.read_csv(std_api_result_csv)
+except:
+    print("file not found")
 
 ct = (datetime.datetime.now())
 timestamp = str(ct.timestamp())
@@ -64,12 +81,12 @@ map_defect_location_code = {
 }
 
 
-for img in glob.glob(image_source_folder + "/*.jpg"):
+for img in glob.glob(image_source_folder + "/*.jpg")[start_index:end_index]:
 
         image_name = img.split('/')[-1]
 #        image_name = image_name.replace(".jpg","_hood.jpg")
         print(image_name)
-
+        
         if image_name not in df['image_name'].tolist():
             print("image not present STD result api")
             continue
@@ -99,13 +116,12 @@ for img in glob.glob(image_source_folder + "/*.jpg"):
 
 
             cmd = '''(echo -n '{ "tenant_id":"001","code":"''' + defect_location_code + '''", "xmin":"''' + str(xmin) + '''", "ymin":"''' + str(ymin) + '''", "xmax":''' + str(xmax) + ''',"ymax":''' + str(ymax) + ''', "raw_image": "'; base64 ''' + img + '''; echo '"}') | curl -X POST "http://0.0.0.0:8001/DefectIdentification/" -H "Content-Type: application/json" -d @-'''        
-            
+            start=time.time()
+            print("Start time:::",start)
             status, output = subprocess.getstatusoutput(cmd)
-    
+            print("end time:::",time.time()-start)
             main_output = output.split("\n")[-1].replace('false','False')
-
             main_output = main_output.split("\n")[-1].replace('true','True')
-
             main_output = eval(main_output)
             
             try:

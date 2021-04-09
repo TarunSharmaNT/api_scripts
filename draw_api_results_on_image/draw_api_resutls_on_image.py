@@ -1,3 +1,4 @@
+##gunicorn -k uvicorn.workers.UvicornWorker --bind "0.0.0.0:8001" --log-level debug main:app
 ##########################Edited March 26 Tarun Sharma######################################
 ###############################################################################
 
@@ -19,16 +20,16 @@ import shutil
 import matplotlib.pyplot as plt 
 
 ############################ parameters########################################################### 
-image_source_folder = "/home/tarun/Number_Theory/New_Data_Preparation/Rear_door/Aniket/dest_folder/"
-std_api_csv_path ="/home/tarun/Number_Theory/New_Data_Preparation/Rear_door/Aniket/main.csv"
-defect_api_csv_path = "/home/tarun/Number_Theory/New_Data_Preparation/Rear_door/Aniket/dest_folder_new/2021_03_281616908265defect_api_result.csv"
-destination_folder = "/home/tarun/Number_Theory/New_Data_Preparation/Rear_door/Aniket/dest_images_new/"
+image_source_folder = "/home/tarun/Number_Theory/New_Data_Preparation/Rear_door/five_thousand/user_6/"
+std_api_csv_path ="/home/tarun/Number_Theory/New_Data_Preparation/Rear_door/five_thousand/std_api/main.csv"
+defect_api_csv_path = "/home/tarun/Number_Theory/New_Data_Preparation/Rear_door/five_thousand/defect_csv/2021_03_311617131681defect_api_result.csv"
+destination_folder = "/home/tarun/Number_Theory/New_Data_Preparation/Rear_door/five_thousand/user_6_bbox/"
 
 if hostname == "tarun-Lenovo-V14-IIL":
-	image_source_folder = "/home/tarun/Number_Theory/New_Data_Preparation/Rear_door/Aniket/dest_folder/"
-	std_api_csv_path ="/home/tarun/Number_Theory/New_Data_Preparation/Rear_door/Aniket/main.csv"
-	defect_api_csv_path = "/home/tarun/Number_Theory/New_Data_Preparation/Rear_door/Aniket/dest_folder_new/2021_03_281616908265defect_api_result.csv"
-	destination_folder = "/home/tarun/Number_Theory/New_Data_Preparation/Rear_door/Aniket/dest_images_new/"
+	image_source_folder = "/home/tarun/Number_Theory/New_Data_Preparation/Rear_door/five_thousand/user_6/"
+	std_api_csv_path ="/home/tarun/Number_Theory/New_Data_Preparation/Rear_door/five_thousand/std_api/main.csv"
+	defect_api_csv_path = "/home/tarun/Number_Theory/New_Data_Preparation/Rear_door/five_thousand/defect_csv/2021_03_311617131681defect_api_result.csv"
+	destination_folder = "/home/tarun/Number_Theory/New_Data_Preparation/Rear_door/five_thousand/user_6_bbox/"
 ##################################################################################################
 
 
