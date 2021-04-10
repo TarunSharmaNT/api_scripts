@@ -47,10 +47,10 @@ if hostname == "tarun-Lenovo-V14-IIL":
     source = "/home/tarun/Number_Theory/Filtered_images/phase_2_testing/rear_door_l/images/"
 print(source)
     	
-selected_codes_for_augpoc = [
-	#"100", "102", "103", "105", "109", "110"
-        "109"
-]
+#selected_codes_for_augpoc = [
+#	#"100", "102", "103", "105", "109", "110"
+#        "109"
+#]
 
 
 #############################Global Variables###############################
@@ -126,9 +126,9 @@ for img in glob.glob(source+"/*.jpg")[start_index : end_index]:
 			image_name = img.split("/")[-1]
 
 			#First skipping is when we have different loc code other than we have chosen 	
-			if image_name.split('_')[2] not in selected_codes_for_augpoc:
-				skipped+=1
-				continue
+			#if image_name.split('_')[2] not in selected_codes_for_augpoc:
+			#skipped+=1
+			#	continue
 				
 
 			#only code we have to change for different location code such as "windshield" or "window_front_right"
